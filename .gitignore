@@ -85,3 +85,14 @@ coverage.profdata
 out_mutator/
 out_old/
 out_backup_*
+# Level 3 fuzzing layout
+fuzz/runs/
+fuzz/out/
+fuzz/corpus/
+fuzz/seeds/
+
+# build / runtime noise
+*.log
+*.profraw
+coverage/
+coverage.profdata
