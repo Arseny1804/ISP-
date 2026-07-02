@@ -1,0 +1,1 @@
+USER root;PASS 123;CWD ..;LIST

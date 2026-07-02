@@ -1,0 +1,6 @@
+PASSom
+USER s
+CW
+PASS 1234
+CWD /
+USER an

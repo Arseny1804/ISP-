@@ -1,0 +1,7 @@
+USER anonymous
+PASS test@test.com
+LIST
+LIST
+LIST
+LIST
+LIST

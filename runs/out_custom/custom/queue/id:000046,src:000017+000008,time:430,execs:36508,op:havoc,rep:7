@@ -1,0 +1,13 @@
+PASS4
+
+CWD ..
+CWD
+CWD .
+CWD
+CWD234
+LIST
+KWD ..
+CWD .
+CWD .
+PASS t
+CWD 

@@ -1,0 +1,5 @@
+USERus
+PASS m
+CWD /
+CWD ..
+LIST

@@ -1,0 +1,6 @@
+USERt
+PASS test
+PWD
+LIST
+CWD /
+QUIT

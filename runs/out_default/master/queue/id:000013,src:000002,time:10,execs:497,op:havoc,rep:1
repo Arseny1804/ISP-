@@ -1,0 +1,7 @@
+USE
+PASS test
+PWD
+LIST
+CWD /
+QUIT/
+QUIT

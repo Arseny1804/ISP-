@@ -1,0 +1,7 @@
+LIST
+PASS 1234
+USER s
+PASS t
+CWD ..
+PASS4
+CWD /

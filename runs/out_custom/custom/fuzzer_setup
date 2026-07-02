@@ -1,0 +1,7 @@
+# environment variables:
+AFL_CUSTOM_MUTATOR_LIBRARY=./ftp_mutator.so
+AFL_CUSTOM_INFO_PROGRAM=./ftp_fuzz_harness
+AFL_CUSTOM_INFO_PROGRAM_ARGV=
+AFL_CUSTOM_INFO_OUT=out_custom/custom
+# command line:
+'afl-fuzz' '-S' 'custom' '-i' 'seeds2' '-o' 'out_custom' '--' './ftp_fuzz_harness'

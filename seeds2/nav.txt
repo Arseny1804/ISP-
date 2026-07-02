@@ -1,0 +1,5 @@
+USER anonymous
+PASS test@test.com
+CWD /
+CWD ..
+LIST

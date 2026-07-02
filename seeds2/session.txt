@@ -1,0 +1,4 @@
+USER anonymous
+PASS test@test.com
+PWD
+LIST

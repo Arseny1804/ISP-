@@ -1,92 +1,115 @@
-# ProFTPD 1.3.x README
+# AFL++ Fuzzing of FTP Protocol Parser
 
-## Status
+## 1. Project Overview
 
-[![GitHub Actions CI Status](https://github.com/proftpd/proftpd/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/proftpd/proftpd/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/proftpd/proftpd/badge.svg?branch=master)](https://coveralls.io/github/proftpd/proftpd?branch=master)
-[![CodeQL Analysis](https://github.com/proftpd/proftpd/actions/workflows/codeql.yml/badge.svg)](https://github.com/proftpd/proftpd/actions/workflows/codeql.yml)
-[![Release](https://img.shields.io/badge/release-1.3.10rc3-brightgreen)](https://github.com/proftpd/proftpd/releases/latest)
-[![License](https://img.shields.io/badge/license-GPL-brightgreen.svg)](https://img.shields.io/badge/license-GPL-brightgreen.svg)
+This project demonstrates grey-box fuzzing of a simplified FTP protocol implementation using AFL++.
 
-## Introduction
+The goal is to compare:
+- Default AFL++ mutation strategy
+- Custom protocol-aware mutator
+- Code coverage analysis (llvm-cov / LCOV)
+- Fuzzing efficiency over a fixed time budget
 
-ProFTPD is a highly configurable FTP daemon for Unix and Unix-like
-operating systems.  See the _**README.ports**_ file for more details about
-the platforms on which ProFTPD in known or thought to build and run.
+---
 
-ProFTPD grew from a desire for a secure and configurable FTP server.
-It was inspired by a significant admiration of the Apache web server.
-Unlike most other Unix FTP servers, it has not been derived from the old
-BSD `ftpd` code base, but is a completely new design and implementation.
+## 2. Target Application
 
-ProFTPD's extensive configurability provides systems administrators great
-flexibility in user authentication and access controls, including virtual
-users and easy `chroot()` FTP sessions for individual users.
+A simplified FTP-like protocol parser implemented in C supporting:
 
-ProFTPD is popular with many service providers for delivering update
-access to user web pages, without resorting to Unix shell accounts.
+- USER
+- PASS
+- LIST
+- CWD
+- QUIT
 
-## Latest Release
+The parser is intentionally simplified for fuzzing and coverage analysis.
 
-- [ftp://ftp.proftpd.org/distrib/source/](ftp://ftp.proftpd.org/distrib/source/)
-- [http://www.proftpd.org/](http://www.proftpd.org/)
+---
 
-> see _**RELEASE_NOTES**_ for an overview of the changes in this release.
+## 3. Tools Used
 
-## Major Features
+- AFL++ 4.33c
+- clang / afl-clang-fast
+- llvm-cov / lcov
+- Python HTTP server (for coverage viewing)
 
-- A single main configuration file, with directives and directive groups patterned after those of the Apache web server.
-- Per directory ".ftpaccess" configuration similar to Apache's ".htaccess".
-- Designed to run either as a stand-alone server or from `inetd`/`xinetd`.
-- Multiple virtual FTP servers and anonymous FTP services.
-- Multiple password files.
-- Shadow password support, including support for expired accounts.
-- Multiple authentication methods, including PAM, LDAP, SQL, and RADIUS.
-- Virtual users.
-- ProFTPD never executes any external program at any time. There is no `SITE EXEC` command, and all file and directory listings are generated internally, without using an external ls command.
-- Anonymous FTP and other chroot directories do not require any specific directory structure, executable programs or other system files.
-- Modular architecture with an API that facilitates well structured extensions to meet user needs.
-- Visibility of directories or files controlled based on Unix style permissions or user/group ownership.
-- Logging and `utmp`/`wtmp` support.  Extensible, customizable logging is available.
-- If supported by the capabilities the host system, it can run as a non-privileged user in stand-alone mode, thwarting attacks aimed at exploiting "root" privileges.
-- GPLv2 source license.  The source code is available to audit.
+---
 
-## Documentation
+## 4. Build Instructions
 
-- The [doc/](doc/) directory
-- [http://www.proftpd.org/docs/](http://www.proftpd.org/docs/)
+### AFL++ Instrumented Build
 
-## Installation Overview
-
-For detailed installation instructions, see the _**INSTALL**_ file in the root
-directory of the source distribution.
-
-The ProFTPD source distribution is designed to be configured using the GNU
-autotools, so compiling and installing follows the familiar command sequence of
 ```bash
-./configure
-make
-make install
+afl-clang-fast -g -O0 ftp_fuzz_harness.c -o ftp_fuzz_harness
 ```
 
-However, a significant portion of ProFTPD's configurability is done at compile
-time, so it is highly recommended that you read _**INSTALL**_ and all of the
-_**README.***_ files that pertain to your platform and desired features before
-building the sources.
+### Coverage Build
 
-ProFTPD uses a single configuration file.  A few examples are included in the
-[sample-configurations/](sample-configurations/) subdirectory of the source
-distribution.
+```bash
+clang --coverage -g -O0 ftp_harness_lcov.c -o ftp_lcov
+```
 
-On most systems, the `inetd` or `xinetd` configuration must be changed, either
-to remove the current ftpd entry to run ProFTPD standalone, or to change the
-current ftpd entry to use the proftpd daemon.
+---
 
-## Questions
+## 5. Fuzzing Setup
 
-If you have questions, please ask them on the appropriate [mailing lists](http://www.proftpd.org/lists.html).
+### Default AFL++
 
-If you don't understand the documentation, please tell us, so we can explain it
-better.  The general idea is: if you need to ask for help, then something needs
-to be fixed so you (and others) don't need to ask for help.  Asking questions
-helps us to know what needs to be documented, described, and/or fixed.
+```bash
+afl-fuzz -i seeds2 -o out_default -- ./ftp_fuzz_harness
+```
+
+### Custom Mutator AFL++
+
+```bash
+gcc -shared -fPIC -O2 ftp_mutator.c -o ftp_mutator.so
+
+AFL_CUSTOM_MUTATOR_LIBRARY=./ftp_mutator.so \
+afl-fuzz -i seeds2 -o out_custom -- ./ftp_fuzz_harness
+```
+
+---
+
+## 6. Results
+
+| Metric           | Default AFL++ | Custom Mutator |
+|------------------|--------------|----------------|
+| Runtime          | 30 min       | 30 min         |
+| Corpus size      | ~80          | ~83            |
+| Crashes          | 0            | 0              |
+| Branch coverage  | ~71%         | ~71–75%        |
+| Map density      | baseline     | slightly higher |
+
+---
+
+## 7. Coverage Report
+
+- Line coverage: 100%
+- Branch coverage: ~71%
+- Region coverage: ~88%
+
+### Run coverage server
+
+```bash
+python3 -m http.server 8000
+```
+
+Open in browser:
+
+```
+http://localhost:8000/lcov_html/
+```
+
+---
+
+## 8. Conclusion
+
+AFL++ successfully fuzzed a simplified FTP parser.
+
+Custom mutator slightly improved exploration but did not significantly change branch coverage.
+
+The experiment demonstrates:
+- AFL++ workflow
+- Greybox fuzzing
+- Custom mutator integration
+- Coverage-guided fuzzing
