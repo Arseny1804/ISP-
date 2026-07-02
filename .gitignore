@@ -1,27 +1,87 @@
-# AFL++ outputs
-out/
-out2/
-out_mut/
-out_mutator/
-out_old/
-out_backup_*/
-
-# runtime runs (optional keep only final manually)
-runs/*/queue
-runs/*/crashes
-runs/*/hangs
-
-# coverage artifacts
-*.profraw
-*.profdata
-coverage/
-coverage.profdata
-
-# binaries
-ftp_fuzz_harness
-ftp_lcov
-ftp_afl_wrapper
+# =========================
+# Build artifacts
+# =========================
+Makefile
+Make.rules
+config.h
+config.log
+config.status
+libtool
+stamp-h
 main
 
-# system junk
+# compiled binaries / tools
+ftp_afl_wrapper
+ftp_fuzz_harness
+ftp_lcov
+*.o
+*.a
+*.so
+
+# =========================
+# Coverage / lcov / gcov
+# =========================
+*.gcda
+*.gcno
+lcov_html/
+
+# =========================
+# Fuzzing outputs (AFL)
+# =========================
+runs/
+out/
+out2/
+out_default/
+out_custom/
+out_backup/
+
+# =========================
+# Seeds / corpora
+# =========================
+seeds/
+seeds2/
+seeds3/
+
+# =========================
+# Temporary / runtime files
+# =========================
 *.log
+*.tmp
+*.swp
+*.swo
+*.bak
+
+# AFL / fuzz metadata
+fuzzer_stats
+plot_data
+fuzz_bitmap
+fastresume.bin
+.cur_input
+
+# =========================
+# Project-specific clutter
+# =========================
+report/
+dict.txt
+ftp.dict
+fuzz.conf
+
+# =========================
+# Generated / install dirs
+# =========================
+include/Makefile
+src/Makefile
+lib/Makefile
+modules/Makefile
+utils/Makefile
+tests/Makefile
+locale/Makefile
+contrib/Makefile
+# extra fuzz / coverage junk
+coverage/
+coverage.profdata
+*.profraw
+
+out_mutator/
+out_old/
+out_backup_*
