@@ -1,0 +1,7 @@
+out/
+out_default/
+out_custom/
+out_parallel/
+*.o
+*.gcda
+*.gcno
