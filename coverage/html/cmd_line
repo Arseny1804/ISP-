@@ -1,0 +1,1 @@
+genhtml /home/coola/protocol-fuzz/ngircd/fuzz/coverage/coverage_filtered.info --output-directory /home/coola/protocol-fuzz/ngircd/fuzz/coverage/html --title 'ngIRCd AFLNet Fuzzing Coverage' --legend

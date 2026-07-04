@@ -1,0 +1,263 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - ngIRCd AFLNet Fuzzing Coverage - ipaddr/ng_ipaddr.c</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../index.html" title="Click to go to top-level">top level</a> - <a href="index.html" title="Click to go to directory ipaddr">ipaddr</a> - ng_ipaddr.c<span style="font-size: 80%;"> (source / <a href="ng_ipaddr.c.func-c.html" title="Click to go to function table">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">ngIRCd AFLNet Fuzzing Coverage</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryLo">56.5&nbsp;%</td>
+            <td class="headerCovTableEntry">46</td>
+            <td class="headerCovTableEntry">26</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2026-07-04 23:17:23</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryMed">80.0&nbsp;%</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">4</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:&nbsp&nbsp&nbsp&nbsp
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+                  <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : /*</span>
+<span id="L2"><span class="lineNum">       2</span>              :  * (c) 2008 Florian Westphal &lt;fw@strlen.de&gt;, public domain.</span>
+<span id="L3"><span class="lineNum">       3</span>              :  */</span>
+<span id="L4"><span class="lineNum">       4</span>              : </span>
+<span id="L5"><span class="lineNum">       5</span>              : #include &quot;portab.h&quot;</span>
+<span id="L6"><span class="lineNum">       6</span>              : </span>
+<span id="L7"><span class="lineNum">       7</span>              : /**</span>
+<span id="L8"><span class="lineNum">       8</span>              :  * @file</span>
+<span id="L9"><span class="lineNum">       9</span>              :  * Functions for AF_ agnostic ipv4/ipv6 handling.</span>
+<span id="L10"><span class="lineNum">      10</span>              :  */</span>
+<span id="L11"><span class="lineNum">      11</span>              : </span>
+<span id="L12"><span class="lineNum">      12</span>              : #include &lt;assert.h&gt;</span>
+<span id="L13"><span class="lineNum">      13</span>              : #include &lt;stdio.h&gt;</span>
+<span id="L14"><span class="lineNum">      14</span>              : #include &lt;string.h&gt;</span>
+<span id="L15"><span class="lineNum">      15</span>              : </span>
+<span id="L16"><span class="lineNum">      16</span>              : #ifdef HAVE_GETADDRINFO</span>
+<span id="L17"><span class="lineNum">      17</span>              : #include &lt;netdb.h&gt;</span>
+<span id="L18"><span class="lineNum">      18</span>              : #include &lt;sys/types.h&gt;</span>
+<span id="L19"><span class="lineNum">      19</span>              : #endif</span>
+<span id="L20"><span class="lineNum">      20</span>              : </span>
+<span id="L21"><span class="lineNum">      21</span>              : #include &quot;ng_ipaddr.h&quot;</span>
+<span id="L22"><span class="lineNum">      22</span>              : </span>
+<span id="L23"><span class="lineNum">      23</span>              : GLOBAL bool</span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">           2 : ng_ipaddr_init(ng_ipaddr_t *addr, const char *ip_str, UINT16 port)</span></span>
+<span id="L25"><span class="lineNum">      25</span>              : {</span>
+<span id="L26"><span class="lineNum">      26</span>              : #ifdef HAVE_WORKING_GETADDRINFO</span>
+<span id="L27"><span class="lineNum">      27</span>              :         int ret;</span>
+<span id="L28"><span class="lineNum">      28</span>              :         char portstr[64];</span>
+<span id="L29"><span class="lineNum">      29</span>              :         struct addrinfo *res0;</span>
+<span id="L30"><span class="lineNum">      30</span>              :         struct addrinfo hints;</span>
+<span id="L31"><span class="lineNum">      31</span>              : </span>
+<span id="L32"><span class="lineNum">      32</span>              :         assert(ip_str);</span>
+<span id="L33"><span class="lineNum">      33</span>              : </span>
+<span id="L34"><span class="lineNum">      34</span> <span class="tlaGNC">           2 :         memset(&amp;hints, 0, sizeof(hints));</span></span>
+<span id="L35"><span class="lineNum">      35</span>              : #ifdef AI_NUMERICHOST</span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaGNC">           2 :         hints.ai_flags = AI_NUMERICHOST;</span></span>
+<span id="L37"><span class="lineNum">      37</span>              : #endif</span>
+<span id="L38"><span class="lineNum">      38</span>              : #ifndef WANT_IPV6       /* do not convert ipv6 addresses */</span>
+<span id="L39"><span class="lineNum">      39</span>              :         hints.ai_family = AF_INET;</span>
+<span id="L40"><span class="lineNum">      40</span>              : #endif</span>
+<span id="L41"><span class="lineNum">      41</span>              : </span>
+<span id="L42"><span class="lineNum">      42</span>              :         /* some getaddrinfo implementations require that ai_socktype is set. */</span>
+<span id="L43"><span class="lineNum">      43</span> <span class="tlaGNC">           2 :         hints.ai_socktype = SOCK_STREAM;</span></span>
+<span id="L44"><span class="lineNum">      44</span>              : </span>
+<span id="L45"><span class="lineNum">      45</span>              :         /* silly, but ngircd stores UINT16 in server config, not string */</span>
+<span id="L46"><span class="lineNum">      46</span> <span class="tlaGNC">           2 :         snprintf(portstr, sizeof(portstr), &quot;%u&quot;, (unsigned int) port);</span></span>
+<span id="L47"><span class="lineNum">      47</span>              : </span>
+<span id="L48"><span class="lineNum">      48</span> <span class="tlaGNC">           2 :         ret = getaddrinfo(ip_str, portstr, &amp;hints, &amp;res0);</span></span>
+<span id="L49"><span class="lineNum">      49</span> <span class="tlaGNC">           2 :         if (ret != 0)</span></span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaUNC">           0 :                 return false;</span></span>
+<span id="L51"><span class="lineNum">      51</span>              : </span>
+<span id="L52"><span class="lineNum">      52</span>              :         assert(sizeof(*addr) &gt;= (size_t)res0-&gt;ai_addrlen);</span>
+<span id="L53"><span class="lineNum">      53</span> <span class="tlaGNC">           2 :         if (sizeof(*addr) &gt;= (size_t)res0-&gt;ai_addrlen)</span></span>
+<span id="L54"><span class="lineNum">      54</span> <span class="tlaGNC">           2 :                 memcpy(addr, res0-&gt;ai_addr, res0-&gt;ai_addrlen);</span></span>
+<span id="L55"><span class="lineNum">      55</span>              :         else</span>
+<span id="L56"><span class="lineNum">      56</span> <span class="tlaUNC">           0 :                 ret = -1;</span></span>
+<span id="L57"><span class="lineNum">      57</span> <span class="tlaGNC">           2 :         freeaddrinfo(res0);</span></span>
+<span id="L58"><span class="lineNum">      58</span> <span class="tlaGNC">           2 :         return ret == 0;</span></span>
+<span id="L59"><span class="lineNum">      59</span>              : #else /* HAVE_GETADDRINFO */</span>
+<span id="L60"><span class="lineNum">      60</span>              :         assert(ip_str);</span>
+<span id="L61"><span class="lineNum">      61</span>              :         memset(addr, 0, sizeof *addr);</span>
+<span id="L62"><span class="lineNum">      62</span>              : #ifdef HAVE_sockaddr_in_len</span>
+<span id="L63"><span class="lineNum">      63</span>              :         addr-&gt;sin4.sin_len = sizeof(addr-&gt;sin4);</span>
+<span id="L64"><span class="lineNum">      64</span>              : #endif</span>
+<span id="L65"><span class="lineNum">      65</span>              :         addr-&gt;sin4.sin_family = AF_INET;</span>
+<span id="L66"><span class="lineNum">      66</span>              : # ifdef HAVE_INET_ATON</span>
+<span id="L67"><span class="lineNum">      67</span>              :         if (inet_aton(ip_str, &amp;addr-&gt;sin4.sin_addr) == 0)</span>
+<span id="L68"><span class="lineNum">      68</span>              :                 return false;</span>
+<span id="L69"><span class="lineNum">      69</span>              : # else</span>
+<span id="L70"><span class="lineNum">      70</span>              :         addr-&gt;sin4.sin_addr.s_addr = inet_addr(ip_str);</span>
+<span id="L71"><span class="lineNum">      71</span>              :         if (addr-&gt;sin4.sin_addr.s_addr == (unsigned) -1)</span>
+<span id="L72"><span class="lineNum">      72</span>              :                 return false;</span>
+<span id="L73"><span class="lineNum">      73</span>              : # endif</span>
+<span id="L74"><span class="lineNum">      74</span>              :         ng_ipaddr_setport(addr, port);</span>
+<span id="L75"><span class="lineNum">      75</span>              :         return true;</span>
+<span id="L76"><span class="lineNum">      76</span>              : #endif /* HAVE_GETADDRINFO */</span>
+<span id="L77"><span class="lineNum">      77</span>              : }</span>
+<span id="L78"><span class="lineNum">      78</span>              : </span>
+<span id="L79"><span class="lineNum">      79</span>              : </span>
+<span id="L80"><span class="lineNum">      80</span>              : GLOBAL void</span>
+<span id="L81"><span class="lineNum">      81</span> <span class="tlaUNC">           0 : ng_ipaddr_setport(ng_ipaddr_t *a, UINT16 port)</span></span>
+<span id="L82"><span class="lineNum">      82</span>              : {</span>
+<span id="L83"><span class="lineNum">      83</span>              : #ifdef WANT_IPV6</span>
+<span id="L84"><span class="lineNum">      84</span>              :         int af;</span>
+<span id="L85"><span class="lineNum">      85</span>              : </span>
+<span id="L86"><span class="lineNum">      86</span>              :         assert(a != NULL);</span>
+<span id="L87"><span class="lineNum">      87</span>              : </span>
+<span id="L88"><span class="lineNum">      88</span> <span class="tlaUNC">           0 :         af = a-&gt;sa.sa_family;</span></span>
+<span id="L89"><span class="lineNum">      89</span>              : </span>
+<span id="L90"><span class="lineNum">      90</span>              :         assert(af == AF_INET || af == AF_INET6);</span>
+<span id="L91"><span class="lineNum">      91</span>              : </span>
+<span id="L92"><span class="lineNum">      92</span> <span class="tlaUNC">           0 :         switch (af) {</span></span>
+<span id="L93"><span class="lineNum">      93</span> <span class="tlaUNC">           0 :         case AF_INET:</span></span>
+<span id="L94"><span class="lineNum">      94</span> <span class="tlaUNC">           0 :                 a-&gt;sin4.sin_port = htons(port);</span></span>
+<span id="L95"><span class="lineNum">      95</span> <span class="tlaUNC">           0 :                 break;</span></span>
+<span id="L96"><span class="lineNum">      96</span> <span class="tlaUNC">           0 :         case AF_INET6:</span></span>
+<span id="L97"><span class="lineNum">      97</span> <span class="tlaUNC">           0 :                 a-&gt;sin6.sin6_port = htons(port);</span></span>
+<span id="L98"><span class="lineNum">      98</span> <span class="tlaUNC">           0 :                 break;</span></span>
+<span id="L99"><span class="lineNum">      99</span>              :         }</span>
+<span id="L100"><span class="lineNum">     100</span>              : #else /* WANT_IPV6 */</span>
+<span id="L101"><span class="lineNum">     101</span>              :         assert(a != NULL);</span>
+<span id="L102"><span class="lineNum">     102</span>              :         assert(a-&gt;sin4.sin_family == AF_INET);</span>
+<span id="L103"><span class="lineNum">     103</span>              :         a-&gt;sin4.sin_port = htons(port);</span>
+<span id="L104"><span class="lineNum">     104</span>              : #endif /* WANT_IPV6 */</span>
+<span id="L105"><span class="lineNum">     105</span> <span class="tlaUNC">           0 : }</span></span>
+<span id="L106"><span class="lineNum">     106</span>              : </span>
+<span id="L107"><span class="lineNum">     107</span>              : </span>
+<span id="L108"><span class="lineNum">     108</span>              : </span>
+<span id="L109"><span class="lineNum">     109</span>              : GLOBAL bool</span>
+<span id="L110"><span class="lineNum">     110</span> <span class="tlaGNC">       19976 : ng_ipaddr_ipequal(const ng_ipaddr_t *a, const ng_ipaddr_t *b)</span></span>
+<span id="L111"><span class="lineNum">     111</span>              : {</span>
+<span id="L112"><span class="lineNum">     112</span>              :         assert(a != NULL);</span>
+<span id="L113"><span class="lineNum">     113</span>              :         assert(b != NULL);</span>
+<span id="L114"><span class="lineNum">     114</span>              : #ifdef WANT_IPV6</span>
+<span id="L115"><span class="lineNum">     115</span> <span class="tlaGNC">       19976 :         if (a-&gt;sa.sa_family != b-&gt;sa.sa_family)</span></span>
+<span id="L116"><span class="lineNum">     116</span> <span class="tlaUNC">           0 :                 return false;</span></span>
+<span id="L117"><span class="lineNum">     117</span>              :         assert(ng_ipaddr_salen(a) == ng_ipaddr_salen(b));</span>
+<span id="L118"><span class="lineNum">     118</span> <span class="tlaGNC">       19976 :         switch (a-&gt;sa.sa_family) {</span></span>
+<span id="L119"><span class="lineNum">     119</span> <span class="tlaUNC">           0 :         case AF_INET6:</span></span>
+<span id="L120"><span class="lineNum">     120</span> <span class="tlaUNC">           0 :                 return IN6_ARE_ADDR_EQUAL(&amp;a-&gt;sin6.sin6_addr, &amp;b-&gt;sin6.sin6_addr);</span></span>
+<span id="L121"><span class="lineNum">     121</span> <span class="tlaGNC">       19976 :         case AF_INET:</span></span>
+<span id="L122"><span class="lineNum">     122</span> <span class="tlaGNC">       19976 :                 return memcmp(&amp;a-&gt;sin4.sin_addr, &amp;b-&gt;sin4.sin_addr, sizeof(a-&gt;sin4.sin_addr)) == 0;</span></span>
+<span id="L123"><span class="lineNum">     123</span>              :         }</span>
+<span id="L124"><span class="lineNum">     124</span> <span class="tlaUNC">           0 :         return false;</span></span>
+<span id="L125"><span class="lineNum">     125</span>              : #else</span>
+<span id="L126"><span class="lineNum">     126</span>              :         assert(a-&gt;sin4.sin_family == AF_INET);</span>
+<span id="L127"><span class="lineNum">     127</span>              :         assert(b-&gt;sin4.sin_family == AF_INET);</span>
+<span id="L128"><span class="lineNum">     128</span>              :         return memcmp(&amp;a-&gt;sin4.sin_addr, &amp;b-&gt;sin4.sin_addr, sizeof(a-&gt;sin4.sin_addr)) == 0;</span>
+<span id="L129"><span class="lineNum">     129</span>              : #endif</span>
+<span id="L130"><span class="lineNum">     130</span>              : }</span>
+<span id="L131"><span class="lineNum">     131</span>              : </span>
+<span id="L132"><span class="lineNum">     132</span>              : </span>
+<span id="L133"><span class="lineNum">     133</span>              : #ifdef WANT_IPV6</span>
+<span id="L134"><span class="lineNum">     134</span>              : GLOBAL const char *</span>
+<span id="L135"><span class="lineNum">     135</span> <span class="tlaGNC">        1235 : ng_ipaddr_tostr(const ng_ipaddr_t *addr)</span></span>
+<span id="L136"><span class="lineNum">     136</span>              : {</span>
+<span id="L137"><span class="lineNum">     137</span>              :         static char strbuf[NG_INET_ADDRSTRLEN];</span>
+<span id="L138"><span class="lineNum">     138</span>              : </span>
+<span id="L139"><span class="lineNum">     139</span> <span class="tlaGNC">        1235 :         strbuf[0] = 0;</span></span>
+<span id="L140"><span class="lineNum">     140</span>              : </span>
+<span id="L141"><span class="lineNum">     141</span> <span class="tlaGNC">        1235 :         ng_ipaddr_tostr_r(addr, strbuf);</span></span>
+<span id="L142"><span class="lineNum">     142</span> <span class="tlaGNC">        1235 :         return strbuf;</span></span>
+<span id="L143"><span class="lineNum">     143</span>              : }</span>
+<span id="L144"><span class="lineNum">     144</span>              : </span>
+<span id="L145"><span class="lineNum">     145</span>              : </span>
+<span id="L146"><span class="lineNum">     146</span>              : /* str must be at least NG_INET_ADDRSTRLEN bytes long */</span>
+<span id="L147"><span class="lineNum">     147</span>              : GLOBAL bool</span>
+<span id="L148"><span class="lineNum">     148</span> <span class="tlaGNC">        5023 : ng_ipaddr_tostr_r(const ng_ipaddr_t *addr, char *str)</span></span>
+<span id="L149"><span class="lineNum">     149</span>              : {</span>
+<span id="L150"><span class="lineNum">     150</span>              : #ifdef HAVE_GETNAMEINFO</span>
+<span id="L151"><span class="lineNum">     151</span> <span class="tlaGNC">        5023 :         const struct sockaddr *sa = (const struct sockaddr *) addr;</span></span>
+<span id="L152"><span class="lineNum">     152</span>              :         int ret;</span>
+<span id="L153"><span class="lineNum">     153</span>              : </span>
+<span id="L154"><span class="lineNum">     154</span> <span class="tlaGNC">        5023 :         *str = 0;</span></span>
+<span id="L155"><span class="lineNum">     155</span>              : </span>
+<span id="L156"><span class="lineNum">     156</span> <span class="tlaGNC">        5023 :         ret = getnameinfo(sa, ng_ipaddr_salen(addr),</span></span>
+<span id="L157"><span class="lineNum">     157</span>              :                         str, NG_INET_ADDRSTRLEN, NULL, 0, NI_NUMERICHOST);</span>
+<span id="L158"><span class="lineNum">     158</span>              :         /*</span>
+<span id="L159"><span class="lineNum">     159</span>              :          * avoid leading ':'.</span>
+<span id="L160"><span class="lineNum">     160</span>              :          * causes mis-interpretation of client host in e.g. /WHOIS</span>
+<span id="L161"><span class="lineNum">     161</span>              :          */</span>
+<span id="L162"><span class="lineNum">     162</span> <span class="tlaGNC">        5023 :         if (*str == ':') {</span></span>
+<span id="L163"><span class="lineNum">     163</span> <span class="tlaUNC">           0 :                 char tmp[NG_INET_ADDRSTRLEN] = &quot;0&quot;;</span></span>
+<span id="L164"><span class="lineNum">     164</span> <span class="tlaUNC">           0 :                 ret = getnameinfo(sa, ng_ipaddr_salen(addr),</span></span>
+<span id="L165"><span class="lineNum">     165</span>              :                                   tmp + 1, (socklen_t)sizeof(tmp) - 1,</span>
+<span id="L166"><span class="lineNum">     166</span>              :                                   NULL, 0, NI_NUMERICHOST);</span>
+<span id="L167"><span class="lineNum">     167</span> <span class="tlaUNC">           0 :                 if (ret == 0)</span></span>
+<span id="L168"><span class="lineNum">     168</span> <span class="tlaUNC">           0 :                         strlcpy(str, tmp, NG_INET_ADDRSTRLEN);</span></span>
+<span id="L169"><span class="lineNum">     169</span>              :         }</span>
+<span id="L170"><span class="lineNum">     170</span>              :         assert (ret == 0);</span>
+<span id="L171"><span class="lineNum">     171</span> <span class="tlaGNC">        5023 :         return ret == 0;</span></span>
+<span id="L172"><span class="lineNum">     172</span>              : #else</span>
+<span id="L173"><span class="lineNum">     173</span>              :         abort(); /* WANT_IPV6 depends on HAVE_GETNAMEINFO */</span>
+<span id="L174"><span class="lineNum">     174</span>              : #endif</span>
+<span id="L175"><span class="lineNum">     175</span>              : }</span>
+<span id="L176"><span class="lineNum">     176</span>              : </span>
+<span id="L177"><span class="lineNum">     177</span>              : #endif /* WANT_IPV6 */</span>
+<span id="L178"><span class="lineNum">     178</span>              : </span>
+<span id="L179"><span class="lineNum">     179</span>              : /* -eof- */</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.0-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

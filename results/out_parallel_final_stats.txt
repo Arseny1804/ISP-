@@ -1,0 +1,32 @@
+=== master ===
+cycles_done       : 7
+execs_done        : 82097
+paths_total       : 213
+bitmap_cvg        : 2.24%
+unique_crashes    : 0
+last_path         : 1783176080
+
+=== slave1 ===
+cycles_done       : 37
+execs_done        : 55454
+paths_total       : 265
+bitmap_cvg        : 2.32%
+unique_crashes    : 0
+last_path         : 1783176092
+
+=== slave2 ===
+cycles_done       : 46
+execs_done        : 51718
+paths_total       : 249
+bitmap_cvg        : 2.29%
+unique_crashes    : 0
+last_path         : 1783175951
+
+=== slave3 ===
+cycles_done       : 45
+execs_done        : 46730
+paths_total       : 246
+bitmap_cvg        : 2.29%
+unique_crashes    : 0
+last_path         : 1783176104
+
