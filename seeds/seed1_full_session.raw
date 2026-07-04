@@ -1,0 +1,7 @@
+PASS irctest
+NICK tester
+USER tester 0 * :Test User
+JOIN #test
+PRIVMSG #test :hello world
+PART #test
+QUIT :bye
