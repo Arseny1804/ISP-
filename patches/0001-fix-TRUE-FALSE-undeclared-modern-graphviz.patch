@@ -1,0 +1,14 @@
+diff --git a/afl-fuzz.c b/afl-fuzz.c
+index 93b3548..31e07a9 100644
+--- a/afl-fuzz.c
++++ b/afl-fuzz.c
+@@ -1,3 +1,9 @@
++#ifndef TRUE
++#define TRUE 1
++#endif
++#ifndef FALSE
++#define FALSE 0
++#endif
+ /*
+   Copyright 2013 Google LLC All rights reserved.
+ 

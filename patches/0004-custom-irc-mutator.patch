@@ -1,0 +1,55 @@
+--- /home/coola/protocol-fuzz/aflnet/afl-fuzz.c	2026-07-04 17:39:37.617296724 +0300
++++ /home/coola/protocol-fuzz/aflnet/afl-fuzz-custom-mutator.c.bak	2026-07-04 17:37:40.018199868 +0300
+@@ -7034,7 +7034,7 @@
+ 
+     for (i = 0; i < use_stacking; i++) {
+ 
+-      switch (UR(15 + 2 + (region_level_mutation ? 4 : 0))) {
++      switch (UR(15 + 2 + (region_level_mutation ? 4 : 0) + 1)) {
+ 
+         case 0:
+ 
+@@ -7482,6 +7482,43 @@
+             break;
+           }
+ 
++        /* Custom, protocol-aware mutation operator (added for IRC/ngIRCd
++           fuzzing lab assignment). Inserts a random IRC command/argument
++           token at a random position, instead of purely random bytes,
++           to more efficiently reach state-transition logic (irc-login.c,
++           irc-channel.c, irc.c) that expects specific ASCII keywords. */
++        case 21: {
++
++            static const char *irc_tokens[] = {
++              "NICK", "USER", "PASS", "JOIN", "PART", "PRIVMSG", "NOTICE",
++              "QUIT", "MODE", "TOPIC", "WHO", "WHOIS", "PING", "PONG",
++              "KICK", "INVITE", "LIST", "NAMES", "OPER", "KILL", "AWAY",
++              "#test", "#a", ":", " ", "\r\n"
++            };
++            u32 tok_idx  = UR(sizeof(irc_tokens) / sizeof(irc_tokens[0]));
++            u32 tok_len  = strlen(irc_tokens[tok_idx]);
++            u32 insert_at = UR(temp_len + 1);
++            u8* new_buf;
++
++            if (temp_len + tok_len >= MAX_FILE) break;
++
++            new_buf = ck_alloc_nozero(temp_len + tok_len);
++
++            /* Head */
++            memcpy(new_buf, out_buf, insert_at);
++            /* Inserted IRC token */
++            memcpy(new_buf + insert_at, irc_tokens[tok_idx], tok_len);
++            /* Tail */
++            memcpy(new_buf + insert_at + tok_len, out_buf + insert_at,
++                   temp_len - insert_at);
++
++            ck_free(out_buf);
++            out_buf   = new_buf;
++            temp_len += tok_len;
++
++            break;
++          }
++
+       }
+ 
+     }
