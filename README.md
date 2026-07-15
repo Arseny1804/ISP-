@@ -80,12 +80,18 @@ cd ngircd-aflnet-fuzz
 
 ## Основные результаты
 
-| Метрика | Default mutations (30 мин) | Custom IRC mutator (30 мин) |
-|---|---|---|
-| paths_total | 142 | 107 |
-| bitmap_cvg | 2.14% | 2.07% |
-| execs_done | 48880 | 44010 |
-| unique_crashes | 0 | 0 |
+| Метрика | Default (30 мин) | Custom havoc-оператор (30 мин) | AFL dictionary -x (30 мин) |
+|---|---|---|---|
+| paths_total | 142 | 107 | 132 |
+| bitmap_cvg | 2.14% | 2.07% | 2.22% |
+| stability | 85.74% | 86.75% | 83.23% |
+| unique_crashes | 0 | 0 | 0 |
+
+Штатный dictionary-механизм AFL дал наибольший прирост покрытия среди
+трёх вариантов (систематический перебор токенов в детерминированной
+стадии эффективнее случайного havoc-оператора). Подробный разбор,
+включая корректный анализ метрики stability и автомата состояний
+AFLNet (ipsm.dot) — см. docs/experiment.md, разделы 9, 12, 13.
 
 | Параллельный кластер | master | slave1 | slave2 | slave3 |
 |---|---|---|---|---|
